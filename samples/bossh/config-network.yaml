@@ -1,0 +1,47 @@
+servers:
+  hosta.bo2go.home:
+    nic:
+      eth0: 
+        ip: 192.168.122.222
+        subnetmask: 24
+        route:
+        gateway: 192.168.122.1
+        default_gw: True
+
+      eth1: 
+        ip: 10.1.91.12
+        subnetmask: 24
+        route: 10.1.91.0/24
+        gateway: 10.1.91.1
+        default_gw: False
+
+      eth2:
+        ip: 10.11.103.56
+        subnetmask: 24
+        route: 10.11.103.0/24
+        gateway: 10.11.103.1
+        default_gw: False
+  
+  hostb.bo2go.home:
+    nic:
+      eth0: 
+        ip: 192.168.122.223
+        subnetmask: 24
+        gateway: 192.168.122.1
+        default_gw: True
+
+      eth1: 
+        ip: 10.1.91.13
+        subnetmask: 24
+        route: 10.1.91.0/24
+        gateway: 10.1.91.1
+        default_gw: False
+
+      eth2:
+        ip: 10.11.103.57
+        subnetmask: 24
+        route: 10.11.103.0/24
+        gateway: 10.11.103.1
+        default_gw: False
+    
+        
