@@ -5,15 +5,18 @@ import yaml
 def read_config_network_yaml(filepath, hostname):
     with open(filepath) as f:
         confs = yaml.load_all(f, Loader=yaml.FullLoader)
-        empty = []
+        dict_net = {}
         for conf in confs:
             for _, v in conf.items():
+                #print("lets see read in yaml object: %s" % confs)
                 for x, y in v.items():
+                    print("lets see network x and y: %s %s %s" %(hostname, x,y))
                     if hostname in x:
                         print(x, "->", y, '\n')
-                        return y
-                    else:
-                        return empty
+                        dict_net = y
+    
+    return dict_net
+
 
 def write_ifcfg_file(nic, nic_details):
     
