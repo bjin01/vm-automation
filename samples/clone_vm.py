@@ -8,6 +8,9 @@ Clone a VM from template example
 """
 from pyVmomi import vim
 from tools import cli, service_instance, pchelper
+import bossh.exec_script
+import sys
+
 
 from add_nic_to_vm import add_nic
 
@@ -24,6 +27,20 @@ def wait_for_task(task):
             print(task.info.error)
             task_done = True
 
+def run_onboarding(vm_name):
+    conf_file = "/root/suma_config.yaml"
+
+    if vm_name != "":
+        vm_name_split = vm_name.split('.', 2)
+        if vm_name_split[0] != "":
+            print("in if vm_name_split[0] %s" %vm_name_split[0])
+            vm_name = vm_name_split[0] + ".engel.int"
+        else:
+            vm_name = vm_name + ".engel.int"
+        print("vm_name fqdn is: %s" %vm_name)
+        suma_login = suma_actions.get_login(conf_file)
+        onboarding.onboarding(suma_login['clone_vm_ip'], vm_name, conf_file)
+    return
 
 def clone_vm(
         content, template, vm_name, datacenter_name, vm_folder, datastore_name,
@@ -95,6 +112,10 @@ def clone_vm(
     task = template.Clone(folder=destfolder, name=vm_name, spec=clonespec)
     wait_for_task(task)
     print("VM cloned.")
+
+    #onboarding.py is start to run
+    print("Staring from here onboarding script is start to run...")
+    run_onboarding(args.vm_name)
 
 
 def main():
