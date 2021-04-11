@@ -25,7 +25,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         vm_name_split = sys.argv[1].split('.', 2)
         if vm_name_split[0] != "":
-            print("in if vm_name_split[0] %s" %vm_name_split[0])
+            #print("in if vm_name_split[0] %s" %vm_name_split[0])
             vm_name = vm_name_split[0] + ".engel.int"
         else:
             vm_name = sys.argv[1] + ".engel.int"
