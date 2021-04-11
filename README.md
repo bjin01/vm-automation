@@ -18,4 +18,15 @@ salt-cloud has been tested but not working properly with pyvmomi so we had to lo
 - finally we also set the vm uuid with the new hostname as salt pillar for further processing with salt.
 - renamed system will be rebooted, the new salt-minion key must be accepted on salt-master respective on suse manager host which could be automated with auto-accept or salt reactors.
 
+## Usage:
 
+You can run the below script with given parameter for the NEW cloned VM with a given hostname. The hostname can be short or fqdn. All other parameters must be provided from a config file in ```/root/suma_config.yaml``` in yaml format.
+
+The desired NEW system networks need to be specified in another yaml file which path is defined in /root/suma_config.yaml Look at sample config: 
+```
+./samples/bossh/config-network.yaml
+```
+
+```
+python3 exec_script.py hostx.mydomain.io
+```
