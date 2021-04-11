@@ -1,6 +1,7 @@
 suma_host: bjsuma.bo2go.home
 suma_user: bjin
 suma_password: suse1234
+clone_vm_ip: 192.168.122.222
 delete_system: template.domain.com
 ssh-user: root
 ssh-password: test

@@ -12,11 +12,11 @@ def test_ssh(hostname, suma_login):
     i = 1
     while i < 12:
         client = SSHClient()
-        print "connecting"
+        print("connecting")
         try:
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             client.connect(hostname, username=suma_login['ssh-user'], password=suma_login['ssh-password'])
-            print "connected"
+            print("connected")
             client.close()
             i = 1000000000000
         except paramiko.ssh_exception.NoValidConnectionsError:
