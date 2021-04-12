@@ -12,8 +12,14 @@ def read_pillar_file(pillar_file, uuid, hostname):
         pillars = yaml.load_all(f, Loader=yaml.FullLoader)
 
         for pillar in pillars:
-            for _, v in pillar.items():
-                v[uuid] = hostname
+            print(pillar)
+            for u, v in pillar.items():
+                print(u)
+                if v:
+                    v[uuid] = hostname
+                else:
+                    pillar[u] = {uuid: hostname}
+               
                 #print(k, "->", v)
         return pillar, pillar_file
 

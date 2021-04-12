@@ -112,7 +112,7 @@ def onboarding(hostname, newhostname, conf_file):
 
 
     # to make sure system got renamed correctly and we reboot the system, soft reboot with 3 minutes delay as default
-    run_cmd(client, 'shutdown -r')
+    #run_cmd(client, 'shutdown -r')
 
     # we hardcoded the pillar file here. Not very elegant but it is as it is
     pillar_file = suma_login['pillar_host']
