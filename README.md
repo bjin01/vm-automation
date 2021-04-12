@@ -44,6 +44,15 @@ cd myrpo
 git clone https://github.com/bjin01/vm-automation.git
 git remote remove origin
 ```
+* Create those files:
+```
+mkdir -p /srv/pillar/change-hostname
+echo "myservers_uuid:" > /srv/pillar/change-hostname/init.sls
+
+mkdir -p /srv/pillar/mynetworks/
+touch /srv/pillar/mynetworks/config-network.yaml
+```
+__Edit /srv/pillar/mynetworks/config-network.yaml using the sample [network config yaml](samples/bossh/config-network.yaml)__
 
 ## Usage:
 
@@ -62,11 +71,22 @@ The root user is configured with a password.
 Once the ```clone_vm.py``` finished cloning the VM with a given name the new VM is booting up and my script start to run. The below code snippet show where I did modification in [clone_vm.py](samples/clone_vm.py)
 ```
 print("cloning VM...")
-    task = template.Clone(folder=destfolder, name=vm_name, spec=clonespec)
-    wait_for_task(task)
-    print("VM cloned.")
-
     #onboarding.py is start to run
     print("Staring from here onboarding script is start to run...")
-    run_onboarding(args.vm_name)
+    run_onboarding(vm_name)
 ```
+## Testing:
+For test purpose without creating new cloned VM you can simply run below command on SUSE Manager from the directory where the repo resides.
+First check in ```/root/suma_config.yaml``` the parameter clone_vm_ip is set to the ip of the VM that is reachable. This IP is used for the ssh connection. Then the new hostname and network definitions will be set. The network definition (eth0, eth1, ...) must be pre-defined in [network config yaml](samples/bossh/config-network.yaml)
+
+
+```
+...
+clone_vm_ip: 192.168.122.223
+...
+```
+```
+python3 exec_script.py <newhostname.domain.com>
+```
+If you use a new hostname that does not exist in config-network.yaml then the targeted host will be renamed but without generating ifcfg-ethX and other network files. So network will not be changed, only host renaming will happen.
+

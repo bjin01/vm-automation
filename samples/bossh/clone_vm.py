@@ -8,7 +8,7 @@ Clone a VM from template example
 """
 from pyVmomi import vim
 from tools import cli, service_instance, pchelper
-import bossh.exec_script
+import exec_script
 import sys
 
 
