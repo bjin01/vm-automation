@@ -115,7 +115,7 @@ def clone_vm(
 
     #onboarding.py is start to run
     print("Staring from here onboarding script is start to run...")
-    run_onboarding(args.vm_name)
+    run_onboarding(vm_name)
 
 
 def main():
