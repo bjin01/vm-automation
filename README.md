@@ -18,15 +18,55 @@ salt-cloud has been tested but not working properly with pyvmomi so we had to lo
 - finally we also set the vm uuid with the new hostname as salt pillar for further processing with salt.
 - renamed system will be rebooted, the new salt-minion key must be accepted on salt-master respective on suse manager host which could be automated with auto-accept or salt reactors.
 
+## Requirements on SUSE Manager host:
+* install the latest python module pyvmomi using pip. [pyVmomi](https://pypi.org/project/pyvmomi/) is the Python SDK for the VMware vSphere API that allows you to manage ESX, ESXi, and vCenter.
+```
+sudo pip install pyvmomi
+sudo pip install --upgrade pyvmomi
+```
+To check pyvmomi version that is installed on your system:
+```
+sudo python3.6 -m pip list | grep -i pyvmomi
+```
+
+* install the latest python module [paramiko](https://pypi.org/project/paramiko/) for remote command execution via ssh
+```
+sudo python3 -m pip install --upgrade paramiko
+```
+To check the installed version of paramiko:
+```
+sudo python3 -m pip list | grep -i paramiko
+```
+* git clone this repo to your SUSE Manager host
+```
+mkdir myrepo
+cd myrpo
+git clone https://github.com/bjin01/vm-automation.git
+git remote remove origin
+```
+
 ## Usage:
 
 You can run the below script with given parameter for the NEW cloned VM with a given hostname. The hostname can be short or fqdn. All other parameters must be provided from a config file in ```/root/suma_config.yaml``` in yaml format.
 
-The desired NEW system networks need to be specified in another yaml file which path is defined in /root/suma_config.yaml Look at sample config: 
+The desired NEW system networks need to be specified in a [network config yaml](../bossh/config-network.yaml) file which path is defined in /root/suma_config.yaml Look at [sample suma_config](../bossh/suma_config.yaml): 
 ```
-./samples/bossh/config-network.yaml
+python3 exec_script.py <new-hostname>
 ```
+## Logic of the automation:
+The workflow starts with using ```clone_vm.py``` deploying a new VM based on template. 
+In the VM template the VM was prepared with the desired network interfaces in the desired LAN or VLAN segments. The eth0 is preconfigured with a static ip.
+The template VM has SLES15SP2 with base, enhanced base pattern installed. Certain binaries e.g. curl, wget, dmidecode need to be installed. SSH daemon of course as well as opened the ports for ssh (22) and salt-minion ports (4505 4506 tcp).
+The root user is configured with a password.
 
+Once the ```clone_vm.py``` finished cloning the VM with a given name the new VM is booting up and my script start to run. The below code snippet show where I did modification in [clone_vm.py](../clone_vm.py)
 ```
-python3 exec_script.py hostx.mydomain.io
+print("cloning VM...")
+    task = template.Clone(folder=destfolder, name=vm_name, spec=clonespec)
+    wait_for_task(task)
+    print("VM cloned.")
+
+    #onboarding.py is start to run
+    print("Staring from here onboarding script is start to run...")
+    run_onboarding(args.vm_name)
 ```
