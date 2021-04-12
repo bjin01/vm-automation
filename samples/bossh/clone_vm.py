@@ -10,7 +10,8 @@ from pyVmomi import vim
 from tools import cli, service_instance, pchelper
 import exec_script
 import sys
-
+import suma_actions
+import onboarding
 
 from add_nic_to_vm import add_nic
 

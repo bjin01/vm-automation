@@ -3,7 +3,7 @@
 VMware VM - clone VM Automation 
 =========================
 
-This project is derived from pyvmomi-community-samples with additional scripts added by me.
+This project is derived from [pyvmomi-community-samples](https://github.com/vmware/pyvmomi-community-samples) with additional scripts added by me.
 The added scripts are mainly using ssh modules from python paramiko to execute several steps via ssh remote commands
 The scripts must run on SUSE Manager host as the api call to SUSE Manager happens on the local host.
 
