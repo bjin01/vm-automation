@@ -49,7 +49,7 @@ git remote remove origin
 
 You can run the below script with given parameter for the NEW cloned VM with a given hostname. The hostname can be short or fqdn. All other parameters must be provided from a config file in ```/root/suma_config.yaml``` in yaml format.
 
-The desired NEW system networks need to be specified in a [network config yaml](../samples/bossh/config-network.yaml) file which path is defined in /root/suma_config.yaml Look at [sample suma_config](../samples/bossh/suma_config.yaml): 
+The desired NEW system networks need to be specified in a [network config yaml](tree/main/samples/bossh/config-network.yaml) file which path is defined in /root/suma_config.yaml Look at [sample suma_config](tree/main/samples/bossh/suma_config.yaml): 
 ```
 python3 exec_script.py <new-hostname>
 ```
@@ -59,7 +59,7 @@ In the VM template the VM was prepared with the desired network interfaces in th
 The template VM has SLES15SP2 with base, enhanced base pattern installed. Certain binaries e.g. curl, wget, dmidecode need to be installed. SSH daemon of course as well as opened the ports for ssh (22) and salt-minion ports (4505 4506 tcp).
 The root user is configured with a password.
 
-Once the ```clone_vm.py``` finished cloning the VM with a given name the new VM is booting up and my script start to run. The below code snippet show where I did modification in [clone_vm.py](../samples/clone_vm.py)
+Once the ```clone_vm.py``` finished cloning the VM with a given name the new VM is booting up and my script start to run. The below code snippet show where I did modification in [clone_vm.py](tree/main/samples/clone_vm.py)
 ```
 print("cloning VM...")
     task = template.Clone(folder=destfolder, name=vm_name, spec=clonespec)
