@@ -96,10 +96,11 @@ def onboarding(hostname, newhostname, conf_file):
                 run_cmd(client, cmd2)
 
             # write ifroute-ethx files if gateway and route are not empty
-            if str(b['gateway']) != "" and b['route'] != None and not b['default_gw']:
+            # below is commented out as most users don't need/want to specify additional routes.
+            """ if str(b['gateway']) != "" and b['route'] != None and not b['default_gw']:
                 #print(str(b['gateway']), b['route'])
                 cmd_routes = 'echo "' + b['route'] + ' ' + str(b['gateway']) + ' - ' + a + '" > /etc/sysconfig/network/ifroute-' + a
-                run_cmd(client, cmd_routes)
+                run_cmd(client, cmd_routes) """
             
             conf = create_ifcfg.write_ifcfg_file(a, b)
             if conf != "":
