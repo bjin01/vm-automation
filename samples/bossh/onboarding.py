@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+"""
+Written by Bo Jin
+Github: https://github.com/jinbo01
+Email: bo.jin@suseconsulting.ch
+
+Executes VM onboarding via ssh
+"""
 
 from paramiko import SSHClient
 import paramiko
@@ -7,6 +14,7 @@ import write_pillar
 import create_ifcfg
 import suma_actions
 import ssh_test
+from trigger_ansible import send_post_request
 
 def run_cmd(client, command):
     print(command)
@@ -35,12 +43,12 @@ def run_cmd_uuid(client, command):
     stderr.close()
     return uuid
 
-def onboarding(hostname, newhostname, conf_file):
+def onboarding(hostname, newhostname):
     paramiko.util.log_to_file("bosshv3.log")
     username = ""
 
     # reading suma and ssh login credentials in.
-    suma_login = suma_actions.get_login(conf_file)
+    suma_login = suma_actions.get_suma_config()
     ssh_test.test_ssh(hostname, suma_login)
     
     client = SSHClient()
@@ -51,7 +59,8 @@ def onboarding(hostname, newhostname, conf_file):
     client.connect(hostname, username=suma_login['ssh-user'], password=suma_login['ssh-password'])
     #client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-    run_cmd(client, 'systemctl stop salt-minion')
+    run_cmd(client, 'systemctl stop venv-salt-minion')
+    run_cmd(client, 'systemctl enable venv-salt-minion')
 
     # here we try to delete either given delete_system in suma_config.yaml or the given newhostname on suse manager host. So this script must run on suma host
     
@@ -71,8 +80,13 @@ def onboarding(hostname, newhostname, conf_file):
 
     #sys.exit(0)
 
-    cmd1 = "echo " + newhostname + " > /etc/salt/minion_id"
+    cmd1 = "echo " + newhostname + " > /etc/venv-salt-minion/minion_id"
+    cmd_grains = "echo -e \"autosign_grains:\n  - os_family\" >> /etc/venv-salt-minion/minion.d/auto_accept.conf"
+    #cmd_grains_activation_key = f'echo -e "activation_key: {suma_login["activation_key"]}\\n  - " >> /etc/venv-salt-minion/minion.d/susemanager.conf'
+    cmd_grains_activation_key = "echo -e activation_key: " + suma_login["activation_key"] + " >> /etc/venv-salt-minion/minion.d/activation_key.conf"
     run_cmd(client, cmd1)
+    run_cmd(client, cmd_grains)
+    run_cmd(client, cmd_grains_activation_key)
     run_cmd(client, 'rm /etc/machine-id')
     run_cmd(client, 'rm /var/lib/dbus/machine-id')
     run_cmd(client, 'dbus-uuidgen --ensure')
@@ -86,10 +100,13 @@ def onboarding(hostname, newhostname, conf_file):
         print("Failed, no pillar_network defined in %s" % conf_file)
         networks = []
 
+    host_new_ip = ""
+
     if len(networks) != 0:
         for a, b in networks['nic'].items():
             # set default gateway if default_gw is true
             if b['default_gw']:
+                host_new_ip = b['ip']
                 cmd4 = 'echo "default ' + b['gateway'] + ' - ' + a + '" > /etc/sysconfig/network/ifroute-' + a
                 run_cmd(client, cmd4)
                 cmd2 = 'echo "' + b['ip'] + ' ' + newhostname + ' ' + newhostname.split(".")[0] + '" >> /etc/hosts'
@@ -108,12 +125,14 @@ def onboarding(hostname, newhostname, conf_file):
                 cmd3 = 'echo "' + conf + '" > ' + filename
                 run_cmd(client, cmd3)
 
-    cmd6 = 'hostnamectl set-hostname ' + newhostname
+    cmd6 = 'yast dns edit hostname=' + newhostname
     run_cmd(client, cmd6)
 
 
     # to make sure system got renamed correctly and we reboot the system, soft reboot with 3 minutes delay as default
-    run_cmd(client, 'shutdown -r')
+    run_cmd(client, 'shutdown -r now')
+
+    send_post_request(host_new_ip)
 
     # we hardcoded the pillar file here. Not very elegant but it is as it is
     pillar_file = suma_login['pillar_host']

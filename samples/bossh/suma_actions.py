@@ -1,10 +1,17 @@
 #!/usr/bin/env python3
+"""
+Written by Bo Jin
+Github: https://github.com/jinbo01
+Email: bo.jin@suseconsulting.ch
 
+This is a helper script used to interact with Uyuni / SUSE Manager API to delete existing registered systems.
+"""
 import yaml
 import os
 from xmlrpc.client import ServerProxy, Error
 import salt.config
 import salt.wheel
+from delete_salt_minion import delete_minion
 
 def get_login(path):
     
@@ -16,6 +23,18 @@ def get_login(path):
             login = a
 
     return login
+
+def get_suma_config(conf_file="/root/suma_config.yaml"):
+    suma_config = dict()
+    try:
+        with open(conf_file) as f:
+            suma_config = yaml.load_all(f, Loader=yaml.FullLoader)
+            for a in suma_config:
+                suma_config = a
+            return suma_config
+    except:
+        raise Exception("Fail to read {}".format(conf_file))
+
 
 def login_suma(login):
     MANAGER_URL = "http://"+ login['suma_host'] +"/rpc/api"
@@ -72,14 +91,10 @@ def delete_salt_minion(minion_name):
     
     if len(minion_pre_list['minions_pre']) > 0:
         for p in minion_pre_list['minions_pre']:
-            if minion_name in p:
-                p_dict = {
-                    'minions_pre': [
-                        p,
-                    ],
-                }
-                print("Deleting minion from pending key accept: %s" % p_dict)
-                wheel.cmd_async({'fun': 'key.delete_dict', 'match': p_dict})
+            if minion_name == p:
+                print("Deleting minion from pending key accept: %s" % minion_name)
+                delete_minion(minion_name)
+                
 
     minion_denied_list = wheel.cmd('key.list', ['denied'])
     if len(minion_denied_list['minions_denied']) > 0:
