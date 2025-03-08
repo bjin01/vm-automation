@@ -1,10 +1,15 @@
-suma_host: bjsuma.bo2go.home
-suma_user: bjin
-suma_password: suse1234
-clone_vm_ip: 192.168.122.222
-delete_system: template.domain.com
+# for SUSE Manager in container refer to localhost is better
+suma_host: localhost
+suma_user: myuser
+suma_password: <PASSWORD>
+clone_vm_ip: 192.168.100.24
+domain: mydomain.com
+delete_system: mytemplate.host.name
 ssh-user: root
-ssh-password: test
+ssh-password: <PASSWORD>
 pillar_host: /srv/pillar/change-hostname/init.sls
 pillar_network: /srv/pillar/mynetworks/config-network.yaml
+activation_key: 1-sles15sp6
+ansible_server: ansible-control-node.mydomain.com
+ansible_rulebook_port: 5000
 
