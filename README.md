@@ -140,33 +140,33 @@ python3.6 /root/vm-automation/samples/bossh/clone_vm.py -s your-vsphere-or-vcent
 The desired NEW system networks need to be specified in a [network config yaml](samples/bossh/config-network.yaml) file which path is defined in /root/suma_config.yaml Look at [sample suma_config](samples/bossh/suma_config.yaml): 
 
 ## Steps of VM provisioning automation:
-The workflow starts with ```clone_vm.py``` by cloning a new VM based on template.
-Right after successful VM clone the VM eth0 network card will be changed to the predefined Network given in /srv/pillar/mynetworks/config-network.yaml
-VM will be powered on
-```clone_vm.py``` will call ```onboarding.py``` to start onboarding process using ssh
-```onboarding.py``` will wait until VM is available and try to connect ssh with given user and password from /root/suma_config.yaml
-Once connected ```onboarding.py``` will re-create machine-id (because it has old template VM machine-id)
-```onboarding.py``` will call ```suma_actions.find_delete_system()``` to delete Template VM if it is still found in SUSE Manager by using SUSE Manager API and salt-key
-```onboarding.py``` will write the FQDN hostname into /etc/venv-salt-minion/minion_id
-```onboarding.py``` will write activation-key into /etc/venv-salt-minion/minion.d/activation_key.conf
-```onboarding.py``` will write
+* The workflow starts with ```clone_vm.py``` by cloning a new VM based on template.
+* Right after successful VM clone the VM eth0 network card will be changed to the predefined Network given in /srv/pillar/mynetworks/config-network.yaml
+* VM will be powered on
+* ```clone_vm.py``` will call ```onboarding.py``` to start onboarding process using ssh
+* ```onboarding.py``` will wait until VM is available and try to connect ssh with given user and password from /root/suma_config.yaml
+* Once connected ```onboarding.py``` will re-create machine-id (because it has old template VM machine-id)
+*  ```onboarding.py``` will call ```suma_actions.find_delete_system()``` to delete Template VM if it is still found in SUSE Manager by using SUSE Manager API and salt-key
+* ```onboarding.py``` will write the FQDN hostname into /etc/venv-salt-minion/minion_id
+* ```onboarding.py``` will write activation-key into /etc/venv-salt-minion/minion.d/activation_key.conf
+* ```onboarding.py``` will write
 ```
 autosign_grains: 
   - os_family
 ``` 
 into /etc/venv-salt-minion/minion.d/auto_accept.conf
 
-```onboarding.py``` will generate /etc/sysconfig/network/ifcfg-eth0 and /etc/sysconfig/network/ifroute-eth0 filed based on given data in /srv/pillar/mynetworks/config-network.yaml
-```onboarding.py``` will write FQDN with the static IP into /etc/hosts
+* ```onboarding.py``` will generate /etc/sysconfig/network/ifcfg-eth0 and /etc/sysconfig/network/ifroute-eth0 filed based on given data in /srv/pillar/mynetworks/config-network.yaml
+* ```onboarding.py``` will write FQDN with the static IP into /etc/hosts
 
-```onboarding.py``` will execute ```yast dns edit hostname=' + newhostname``` in order to change hostname.
-if ansible_server and ansible_rulebook_port are predefined then ```onboarding.py``` will execute 
+* ```onboarding.py``` will execute ```yast dns edit hostname=' + newhostname``` in order to change hostname.
+* if ansible_server and ansible_rulebook_port are predefined then ```onboarding.py``` will execute 
 ```
 send_post_request(host_new_ip)
 ```
 to call ansible rule-book in order to trigger additional playbooks.
-```onboarding.py``` will write new VM uuid and hostname into pillar file /srv/pillar/change-hostname/init.sls
-Finally ```onboarding.py``` will reboot the VM.
+* ```onboarding.py``` will write new VM uuid and hostname into pillar file /srv/pillar/change-hostname/init.sls
+* Finally ```onboarding.py``` will reboot the VM.
 
 ## sample suma_conf.yaml
 ```
