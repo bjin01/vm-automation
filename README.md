@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/vmware/pyvmomi-community-samples.svg?branch=master)](https://travis-ci.org/vmware/pyvmomi-community-samples) 
-
 VMware - SUSE Linux VM clone from template - Automation (2025) with ansible EDA support 
 =========================
 
