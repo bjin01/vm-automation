@@ -132,7 +132,9 @@ def onboarding(hostname, newhostname):
     # to make sure system got renamed correctly and we reboot the system, soft reboot with 3 minutes delay as default
     run_cmd(client, 'shutdown -r now')
 
-    send_post_request(host_new_ip)
+    if suma_login.get("ansible_server") and suma_login.get("ansible_rulebook_port"):
+        send_post_request(host_new_ip)
+
 
     # we hardcoded the pillar file here. Not very elegant but it is as it is
     pillar_file = suma_login['pillar_host']
