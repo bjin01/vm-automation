@@ -1,20 +1,46 @@
 [![Build Status](https://travis-ci.org/vmware/pyvmomi-community-samples.svg?branch=master)](https://travis-ci.org/vmware/pyvmomi-community-samples) 
 
-VMware - SUSE Linux VM clone from template - Automation 
+VMware - SUSE Linux VM clone from template - Automation (2025) with ansible EDA support 
 =========================
 
 This project is derived from [pyvmomi-community-samples](https://github.com/vmware/pyvmomi-community-samples) with additional scripts added.
 
-The baisc workflow is to use VMware python API to generate a new Virtual Machine based on VMware Template and register the new VM with predefined individual VM configurations into SUSE Manager / Uyuni.
+The workflow is to use VMware python API to clone a new Virtual Machine from VMware Template and register the new VM with predefined individual VM configurations into SUSE Manager / Uyuni.
 
-Based on several customer requirements the scripts have been extend over years.
+Based on several customer requirements the scripts have been extended over years.
 
-The latest updated scripts support calling ansible rule-book HTTP Endpoint to trigger additional ansible playbooks to be deployed to new VM.
+The latest updates support calling ansible rule-book HTTP Endpoint and trigger ansible playbooks deployment to new VM.
 
 
 ## Motivation:
-Although other possibilities like terraform, salt-cloud, autoyast, ansible etc support similar approach but over the years I found out that many customers still rely on VMware infrastructure and cloning from template is an time efficient way to provision new VMs. 
+Although other possibilities like terraform, salt-cloud, autoyast, ansible etc. support similar approach but over the years I found out that many customers still rely on VMware infrastructure and cloning from template is an time efficient way to provision new VMs quickly. But cloned VM is static and lacks individual configurations.
 The VM from template will be __customized__ based on predefined FQDN hostname and IPs etc.
+
+Software Products required:
+* VMWare vCenter vSphere
+* SUSE Manager / Uyuni
+* salt-master
+* python3.6 or higher
+
+## Tested Environement:
+```
+VMware vCenter 11.6
+SUSE Manager 5.0.x
+SLE-Micro 5.5
+salt-master 3006.0
+ansible [core 2.16.5]
+ansible host: SLES15SP6
+Client System: SLES15SP6
+```
+```
+ansible-rulebook --version
+1.1.2
+  Executable location = /usr/local/bin/ansible-rulebook
+  Drools_jpy version = 0.3.9
+  Java home = /usr/lib64/jvm/java-21-openjdk-21
+  Java version = 21.0.6
+  Python version = 3.11.10 (main, Sep 18 2024, 22:14:32) [GCC]
+```
 
 ## Main functions:
 - Use clone_vm.py to create cloned VM.
@@ -25,13 +51,13 @@ The VM from template will be __customized__ based on predefined FQDN hostname an
 - Once the new VM is rebooted the venv-salt-minion.service is started and registered to SUSE Manager and ansible playbooks can be deployed.
 
 ## Requirements on SUSE Manager host:
-We need python libraries:
+We need additional python libraries in SUSE Manager container:
 * pyVmomi
 * paramiko
 
-In current SUSE Manager 5.0.x releases python3.6 is the version to use.
+python3.6 is the version to use in SUSE Manager 5.0.x release 
 
-Both libraries can be installed via rpm or pip3.6 (on SLES15SP6)
+Both libraries can be installed via rpm 
 ```
 uyuni-server:/ # rpm -qa | grep paramiko
 python3-paramiko-3.4.0-150400.9.3.3.noarch
@@ -39,12 +65,17 @@ uyuni-server:/ # rpm -qa | grep pyvmomi
 python3-pyvmomi-6.7.3-150200.3.5.5.noarch
 ```
 
-pip install pyvmomi [pyVmomi](https://pypi.org/project/pyvmomi/) 
+or pip3.6 (on SLES15SP6)
+```
+zypper install -y python3-pip
+```
+
+pip3.6 install pyvmomi [pyVmomi](https://pypi.org/project/pyvmomi/) 
 
 pyVmomi is the Python SDK for the VMware vSphere Management API that allows you to rapidly build solutions integrated with VMware ESXi and vCenter Server
 ```
-sudo pip install pyvmomi
-sudo pip install --upgrade pyvmomi
+sudo pip3.6 install pyvmomi
+sudo pip3.6 install --upgrade pyvmomi
 ```
 To check pyvmomi version that is installed on your system:
 ```
@@ -70,7 +101,8 @@ git remote remove origin
 
 ## Configuration Files required:
 
-*** Starting SUSE Manager 5.x container is being used. Directories /srv/salt /srv/pillar /etc/salt are persistent volume mounts. If container is removed config files in those directories will not be deleted. ***
+[!IMPORTANT]
+***Starting SUSE Manager 5.x container is being used. Directories /srv/salt /srv/pillar /etc/salt are persistent volume mounts. If container is removed config files in those directories will not be deleted.***
 
 Create those files on SUSE Manager (in container of SUSE Manager):
 ```
