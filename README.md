@@ -101,8 +101,8 @@ git remote remove origin
 
 ## Configuration Files required:
 
-[!IMPORTANT]
-***Starting SUSE Manager 5.x container is being used. Directories /srv/salt /srv/pillar /etc/salt are persistent volume mounts. If container is removed config files in those directories will not be deleted.***
+> [!IMPORTANT]
+> ***Starting SUSE Manager 5.x container is being used. Directories /srv/salt /srv/pillar /etc/salt are persistent volume mounts. If container is removed config files in those directories will not be deleted.***
 
 Create those files on SUSE Manager (in container of SUSE Manager):
 ```
